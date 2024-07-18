@@ -12,23 +12,20 @@ const AnimatedText: React.FC = () => {
     const options = {
       strings: [
         '.dev',
-        'hi',
-        "what's up?",
-        'developed with love',
+        'hi',        
+        'rm -rf /',
+        "what's up?",        
+        ':(){ :|:& };: fork bomb!',
+        '.dev',
         'sometimes i code',
         '(◑‿◐)',
         'sometimes i break things',
         '(●´⌓`●)',
         'sometimes i fix them',
-        '¯\\_(ツ)_/¯',
-        'rm -rf /',
-        '¯\\_(⊙_☉)_/¯',
+        '.dev',
         'chmod -R 777 /',
-        ':(){ :|:& };: fork bomb!',
-        "i don't have cookies, yet",
         'this is a website',
-        "i don't know what else to say",
-        'this loop will now repeat',
+        'hello world!',
       ],
       typeSpeed: 50,
       backSpeed: 40,
@@ -52,12 +49,11 @@ const AnimatedText: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex items-center text-2xl md:text-4xl lg:text-5xl">
-      <span className="text-purple-500">
-        carl@eid:<span className="text-blue-500">~</span>
-        <span className="text-white">$&nbsp;</span>
-      </span>
-      <span ref={el} className={styles.typedCursor} />
+    <div className="flex flex-col items-center text-xl md:text-2xl lg:text-4xl px-4 md:px-8 lg:px-16">
+      <div className="w-full max-w-screen-lg whitespace-pre-wrap">
+        <span className="text-purple-500">carl@eid:<span className="text-blue-500">~</span><span className="text-white">$&nbsp;</span></span>
+        <span ref={el} className={`${styles.typedText} ${styles.typedCursor}`} />
+      </div>
     </div>
   );
 };

@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-black rounded-full px-8 py-4 flex justify-center space-x-16 mt-4 mx-auto max-w-screen-lg">
+    <nav className="bg-black rounded-full px-12 py-4 flex justify-center space-x-10 mt-4 mx-auto max-w-screen-lg">
       {links.map((link) => (
         <Link key={link.href} href={link.href} className="relative text-white hover:text-purple-500">
           <span

@@ -11,7 +11,7 @@ const Home: React.FC = () => {
       <Navbar />
       <div className="flex-grow flex flex-col items-center justify-center">
         <AnimatedText />
-        <h2 className="text-2xl mt-4 md:text-3xl lg:text-4xl">software / devops engineer</h2>
+        <h2 className="text-l mt-4 md:text-xl lg:text-2xl">software / devops engineer</h2>
         {/* Other content of the home page */}
       </div>
     </div>
