@@ -1,0 +1,12 @@
+/* src/styles/AnimatedText.module.css */
+.typed-cursor {
+    opacity: 1;
+    animation: blink 0.7s infinite;
+    vertical-align: text-bottom;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
