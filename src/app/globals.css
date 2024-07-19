@@ -6,3 +6,7 @@
 body {
   @apply bg-dark;
 }
+
+html {
+  scroll-behavior: smooth;
+}

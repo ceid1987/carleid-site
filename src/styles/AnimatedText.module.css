@@ -1,9 +1,21 @@
 /* src/styles/AnimatedText.module.css */
 .typed-cursor {
+    display: inline-block;
     opacity: 1;
     animation: blink 0.7s infinite;
-    vertical-align: text-bottom;
+    vertical-align: middle;
+    line-height: inherit;
+    height: 1em; /* Ensure the height matches the text */
   }
+
+  .typed-text {
+    display: inline-block;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-indent: -1ch; /* Align first line under $ */
+    padding-left: 1ch; /* Indent subsequent lines */
+  }
+  
   
   @keyframes blink {
     0%, 100% { opacity: 1; }
