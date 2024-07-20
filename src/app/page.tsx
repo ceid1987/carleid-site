@@ -33,6 +33,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen text-white">
       <Navbar currentSection={currentSection} />
       <div id="home" className="min-h-screen flex flex-grow flex-col items-center justify-center">
+        <div className="bg"></div>
         <AnimatedText />
         <h2 className="text-l mt-4 md:text-xl lg:text-2xl">software / devops engineer</h2>
       </div>
