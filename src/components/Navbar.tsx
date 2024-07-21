@@ -1,3 +1,4 @@
+// Navbar.tsx
 import React from 'react';
 import Link from 'next/link';
 
@@ -18,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentSection }) => {
       {links.map(link => (
         <Link key={link.href} href={link.href} className="relative text-white hover:text-purple-500">
           <span className={`relative text-white hover:text-purple-500 ${currentSection === link.href.slice(1) ? 'font-bold' : ''}`}>
-            {currentSection === link.href.slice(1) && <span className="absolute left-[-10px] text-purple-500">{`> `}</span>}
+            {currentSection === link.href.slice(1) && <span className="absolute left-[-10px] text-purple-500">{`>`}</span>}
             {link.label}
           </span>
         </Link>
