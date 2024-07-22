@@ -70,27 +70,27 @@ const Home: React.FC = () => {
         <AsciiBackground />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl p-2 md:p-17">
           <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-4 text-center">about me</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 text-center mt-6">about me</h2>
             <p className="text-m md:text-2lg lg:text-xl">
-              Software/DevOps engineer from 🇱🇧 Lebanon, based in 🇫🇷 France. I like to develop scalable solutions from the ground up, all the way to deployment :)
+              software / devops engineer from Lebanon, based in France. I like to develop scalable solutions from the ground up, all the way to deployment :)
             </p>
           </div>
           <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-4 text-center">tech stack</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">tech stack</h2>
             <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
               {/* Add your tech stack slider here */}
               <p>Tech stack slider placeholder</p>
             </div>
           </div>
           <div className='flex flex-col items-center'>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-4 text-center">experience</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">experience</h2>
             <button className="bg-white bg-opacity-10 backdrop-blur-lg text-white py-2 px-4 rounded-full text-lg mt-2 ">
               view timeline<FontAwesomeIcon icon={faEye} className="ml-2 fa-xs"/> 
             </button>
             <a href="#" className="block mt-4 text-white underline ">full resume<FontAwesomeIcon icon={faExternalLink} className="ml-2 fa-xs"/></a>
           </div>
           <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-4 text-center">now playing</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">now playing</h2>
             <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
               {/* Add your now playing content here */}
               <p>Now playing placeholder</p>
