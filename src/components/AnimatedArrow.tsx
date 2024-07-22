@@ -11,7 +11,7 @@ interface AnimatedArrowProps {
 
 const AnimatedArrow: React.FC<AnimatedArrowProps> = ({ visible }) => {
   return (
-    <div className={classNames("absolute bottom-6 flex justify-center w-full transition-opacity duration-1000", {
+    <div className={classNames("absolute bottom-28 flex justify-center w-full transition-opacity duration-1000", {
       "opacity-0": !visible,
       "opacity-80": visible,
     })}>
