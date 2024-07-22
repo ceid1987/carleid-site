@@ -1,0 +1,20 @@
+.asciiBackground {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    z-index: 0; /* Ensure it sits behind other elements */
+    max-height: 50vh;
+  }
+  
+  .animatedText {
+    font-size: 1rem;
+    background: url('https://www.fubiz.net/wp-content/uploads/2016/09/bodygifsbetweenlightandshadow5.gif');
+    background-size: contain;
+    background-position: center;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
