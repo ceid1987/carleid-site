@@ -1,19 +1,19 @@
 "use client";
 
-// Dependencies
+// Dependencies/utils
 import React, { useEffect, useState } from 'react';
 import { faExternalLink, faExternalLinkSquare, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { motion } from 'framer-motion';
 
 // Components
 import Navbar from '../components/Navbar';
-import AnimatedText from '../components/AnimatedText';
+import AnimatedTextS1 from '../components/AnimatedTextS1';
 import AnimatedArrow from '../components/AnimatedArrow';
+import { LampContainer } from '../components/Lamp';
 
 // Styles
 import styles from '../styles/Parallax.module.css';
-import AsciiBackground from '@/components/AsciiBackground';
-
 
 const Home: React.FC = () => {
   const [currentSection, setCurrentSection] = useState('home');
@@ -55,54 +55,44 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen text-white">
       <Navbar currentSection={currentSection} />
-      <div id="home" className="min-h-screen flex flex-grow flex-col items-center justify-center relative">
-        <div className="bg"></div>
+      <div id="home" className="min-h-screen flex flex-grow flex-col items-center justify-center relative bg-background">
         <div className={`${styles.parallax} ${styles['parallax-fast']}`}>
-          <AnimatedText />
+          <AnimatedTextS1 />
         </div>
         <h2 className={`${styles.parallax} ${styles['parallax-fast']} text-l mt-4 md:text-xl lg:text-2xl transition-opacity duration-1000 ${scrollY > 300 ? 'opacity-0' : 'opacity-100'}`}>
           software / devops engineer
         </h2>
         <AnimatedArrow visible={showArrow} />
       </div>
-      <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black text-white  p-12">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl mt-18 py-16">whoami</h1>
-        <AsciiBackground />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl p-2 md:p-17">
-          <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 text-center mt-6">about me</h2>
-            <p className="text-m md:text-2lg lg:text-xl">
-              software / devops engineer from Lebanon, based in France. I like to develop scalable solutions from the ground up, all the way to deployment :)
-            </p>
+      <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black bg-dot-white relative">
+        <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:linear-gradient(to_bottom,black,transparent,black),radial-gradient(ellipse_at_center,transparent_10%,black)]"></div>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold z-0">whoami</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl md:p-17 py-16 px-8">
+          <div className='flex flex-col h-auto rounded-xl bg-white backdrop-blur-3xl bg-opacity-10 text-white p-8 space-y-4'>
+            <p className='text-lg md:text-2xl text-purple-500 font-bold'>bio</p>
+            <p className='text-xs md:text-lg text-left'>I&rsquo;m a software/devops engineer from Lebanon, based in France. I like to develop scalable solutions from the ground up following devops practices, all the way to deployment.</p>
           </div>
-          <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">tech stack</h2>
-            <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-              {/* Add your tech stack slider here */}
-              <p>Tech stack slider placeholder</p>
-            </div>
+          <div className='flex flex-col h-auto rounded-xl bg-white backdrop-blur-3xl bg-opacity-10 text-white p-8 space-y-4'>
+            <p className='text-lg md:text-2xl text-purple-500 font-bold'>tech stack</p> 
           </div>
-          <div className='flex flex-col items-center'>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">experience</h2>
-            <button className="bg-white bg-opacity-10 backdrop-blur-lg text-white py-2 px-4 rounded-full text-lg mt-2 ">
-              view timeline<FontAwesomeIcon icon={faEye} className="ml-2 fa-xs"/> 
-            </button>
+          <div className='flex flex-col h-auto rounded-xl bg-white backdrop-blur-3xl bg-opacity-10 text-white p-8 space-y-4'>
+            <p className='text-lg md:text-2xl text-purple-500 font-bold'>experience</p>
+            <p className='text-xs md:text-lg text-left'>experience here</p>
             <a href="#" className="block mt-4 text-white underline ">full resume<FontAwesomeIcon icon={faExternalLink} className="ml-2 fa-xs"/></a>
           </div>
-          <div>
-            <h2 className="text-xl md:text-2xl lg:text-3xl text-purple-500 mb-6 mt-6 text-center">now playing</h2>
-            <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-              {/* Add your now playing content here */}
-              <p>Now playing placeholder</p>
-            </div>
+          <div className='flex flex-col h-auto rounded-xl bg-white backdrop-blur-3xl bg-opacity-10 text-white p-8 space-y-4'>
+            <p className='text-lg md:text-2xl text-purple-500 font-bold'>placeholder</p>
+            <p className='text-xs md:text-lg text-left'>placeholder</p>
           </div>
         </div>
       </div>
+
       <div id="projects" className="min-h-screen flex flex-grow flex-col items-center justify-center">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl">Projects Section</h1>
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold">projects</h1>
       </div>
+
       <div id="contact" className="min-h-screen flex flex-grow flex-col items-center justify-center">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl">Contact Section</h1>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold">Contact Section</h1>
       </div>
     </div>
   );
