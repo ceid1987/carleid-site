@@ -6,7 +6,7 @@ const roboto = Roboto_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "carleid.dev",
-  description: "Developped with love",
+  description: "my website",
 };
 
 export default function RootLayout({
