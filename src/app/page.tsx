@@ -4,13 +4,11 @@
 import React, { useEffect, useState } from 'react';
 import { faExternalLink, faExternalLinkSquare, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { motion } from 'framer-motion';
 
 // Components
 import Navbar from '../components/Navbar';
 import AnimatedTextS1 from '../components/AnimatedTextS1';
 import AnimatedArrow from '../components/AnimatedArrow';
-import { LampContainer } from '../components/Lamp';
 
 // Styles
 import styles from '../styles/Parallax.module.css';
@@ -67,7 +65,7 @@ const Home: React.FC = () => {
       <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black bg-dot-white relative">
         <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:linear-gradient(to_bottom,black,transparent,black),radial-gradient(ellipse_at_center,transparent_10%,black)]"></div>
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold z-0">whoami</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl md:p-17 py-16 px-8">
+        <div className="flex flex-col gap-12 w-full max-w-4xl py-16 px-8">
           <div className='flex flex-col h-auto rounded-xl bg-white backdrop-blur-3xl bg-opacity-10 text-white p-8 space-y-4'>
             <p className='text-lg md:text-2xl text-purple-500 font-bold'>bio</p>
             <p className='text-xs md:text-lg text-left'>I&rsquo;m a software/devops engineer from Lebanon, based in France. I like to develop scalable solutions from the ground up following devops practices, all the way to deployment.</p>
