@@ -34,6 +34,17 @@ html {
   opacity: .9;
 }
 
+.bg-background::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%; /* Adjust height for the blending area */
+  background: linear-gradient(transparent, black);
+  z-index: 1;
+}
+
 @keyframes bg-animation {
   0% { transform: translate(0,0) }
   10% { transform: translate(-5%,-5%) }
@@ -47,3 +58,87 @@ html {
   90% { transform: translate(10%,5%) }
   100% { transform: translate(5%,0) }
 }
+
+/* Maintenance Page Styles */
+.maintenance-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #ecf0f1;
+  text-align: center;
+}
+
+.maintenance-title {
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
+.maintenance-message {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+  color: #bdc3c7;
+}
+
+/* Gears */
+.maintenance-gears {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.maintenance-gear {
+  width: 80px;
+  height: 80px;
+  border: 10px solid #ecf0f1;
+  border-radius: 50%;
+  position: relative;
+  animation: maintenance-spin 2s linear infinite;
+}
+
+.maintenance-gear-large {
+  width: 100px;
+  height: 100px;
+  margin-right: 20px;
+}
+
+.maintenance-gear-small {
+  width: 60px;
+  height: 60px;
+  animation-duration: 1.5s;
+}
+
+.maintenance-gear::before,
+.maintenance-gear::after {
+  content: "";
+  position: absolute;
+  background: #ecf0f1;
+}
+
+.maintenance-gear::before {
+  width: 20%;
+  height: 10%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.maintenance-gear::after {
+  width: 10%;
+  height: 20%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+@keyframes maintenance-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
