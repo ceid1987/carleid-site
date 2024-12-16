@@ -65,7 +65,6 @@ const Home: React.FC = () => {
         <AnimatedArrow visible={showArrow} />
       </div>
       <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black">
-        <Maintenance />
         <NowPlaying />
       </div>
     </div>

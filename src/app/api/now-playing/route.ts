@@ -21,9 +21,18 @@ if (!clientId || !clientSecret || !refreshToken) {
   throw new Error('Missing required environment variables for Spotify API');
 }
 
+// In-memory storage for the access token
+let cachedAccessToken: string | null = null;
+let tokenExpiryTime: number | null = null;
 
 const getAccessToken = async (): Promise<string> => {
-  // Refresh the Spotify access token
+  // Check if the token is cached and not expired
+  if (cachedAccessToken && tokenExpiryTime && Date.now() < tokenExpiryTime) {
+    console.log('Using cached access token');
+    return cachedAccessToken;
+  }
+
+  console.log('Refreshing access token...');
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
@@ -34,6 +43,7 @@ const getAccessToken = async (): Promise<string> => {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     }),
+    cache: 'no-store', // Ensures no caching of the token response
   });
 
   if (!response.ok) {
@@ -42,8 +52,11 @@ const getAccessToken = async (): Promise<string> => {
   }
 
   const data = await response.json();
-  console.log('Access token refreshed successfully at:', new Date().toISOString());
-  return data.access_token;
+  cachedAccessToken = data.access_token;
+  tokenExpiryTime = Date.now() + data.expires_in * 1000; // Set expiry time
+
+  console.log('Access token refreshed successfully. Expires in:', data.expires_in, 'seconds');
+  return cachedAccessToken!;
 };
 
 const getNowPlaying = async (accessToken: string) => {
@@ -52,6 +65,7 @@ const getNowPlaying = async (accessToken: string) => {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    cache: 'no-store',
   });
 
   if (response.status === 204 || response.status > 400) {

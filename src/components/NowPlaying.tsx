@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
+import { FaSpotify } from 'react-icons/fa';
 
 const NowPlaying = () => {
   const [song, setSong] = useState<{
@@ -6,8 +8,14 @@ const NowPlaying = () => {
     artists: string;
     albumImage: string;
     isPlaying: boolean;
+    progress: number;
+    duration: number;
   } | null>(null);
 
+  const [currentProgress, setCurrentProgress] = useState<number>(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch data from the API every 30 seconds
   useEffect(() => {
     const fetchNowPlaying = async () => {
       try {
@@ -19,34 +27,109 @@ const NowPlaying = () => {
             artists: data.artists,
             albumImage: data.albumImage,
             isPlaying: data.isPlaying,
+            progress: data.progress,
+            duration: data.duration,
           });
+          setCurrentProgress(data.progress); // Set initial progress from API
         } else {
           setSong(null);
+          setCurrentProgress(0);
         }
       } catch (error) {
         console.error('Error fetching now playing:', error);
         setSong(null);
+        setCurrentProgress(0);
       }
     };
 
+    // Initial API call
     fetchNowPlaying();
-    const interval = setInterval(fetchNowPlaying, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+
+    // Refresh API every 30 seconds
+    const apiInterval = setInterval(fetchNowPlaying, 30000);
+
+    return () => clearInterval(apiInterval); // Cleanup on unmount
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Simulate progress locally
+  useEffect(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+
+    if (song && song.isPlaying) {
+      // Start simulating progress
+      progressIntervalRef.current = setInterval(() => {
+        setCurrentProgress((prev) => {
+          if (prev < song.duration) {
+            return prev + 1000; // Increment progress by 1 second
+          } else {
+            clearInterval(progressIntervalRef.current!); // Clear when song ends
+            return prev;
+          }
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current); // Cleanup progress simulation
+      }
+    };
+  }, [song]); // Restart simulation when song changes
 
   if (!song) {
-    return <p>Not currently playing anything.</p>;
+    return (
+      <div className="flex-col p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+        <div className="flex items-center space-x-4">
+          <FaSpotify size={24} className="text-green-500" />
+          <h2 className="text-lg font-bold">now playing</h2>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="w-32 h-32 rounded-lg bg-gray-900" />
+          <div>
+            <h3 className="text-lg font-bold">nothing</h3>
+            <p className="text-sm text-gray-500">no one</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  const progressPercentage = (currentProgress / song.duration) * 100;
+
   return (
-    <div className="flex items-center space-x-4">
-      <img src={song.albumImage} alt={song.name} className="w-16 h-16 rounded-lg" />
-      <div>
-        <h3 className="text-lg font-bold">{song.name}</h3>
-        <p className="text-sm text-gray-500">{song.artists}</p>
+    <div className="flex-col p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+      <div className="flex items-center space-x-4">
+        <FaSpotify size={24} className="text-green-500" />
+        <h2 className="text-lg font-bold">Now Playing</h2>
+      </div>
+      <div className="flex items-center space-x-4">
+        <img src={song.albumImage} alt={song.name} className="w-32 h-32 rounded-lg" />
+        <div>
+          <h3 className="text-lg font-bold">{song.name}</h3>
+          <p className="text-sm text-gray-500">{song.artists}</p>
+          <div className="w-full h-1 bg-gray-600 rounded-full mt-2">
+            <div
+              className="h-full bg-green-500 rounded-full transition-all"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>{formatTime(currentProgress)}</span>
+            <span>{formatTime(song.duration)}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
+};
+
+// Helper function to format time in milliseconds to MM:SS
+const formatTime = (ms: number) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
 export default NowPlaying;
