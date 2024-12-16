@@ -10,6 +10,7 @@ import Navbar from '../components/Navbar';
 import AnimatedTextS1 from '../components/AnimatedTextS1';
 import AnimatedArrow from '../components/AnimatedArrow';
 import Maintenance from '../components/Maintenance';
+import NowPlaying from '../components/NowPlaying';
 
 // Styles
 import styles from '../styles/Parallax.module.css';
@@ -65,6 +66,7 @@ const Home: React.FC = () => {
       </div>
       <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black">
         <Maintenance />
+        <NowPlaying />
       </div>
     </div>
   );
