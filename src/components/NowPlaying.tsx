@@ -80,7 +80,7 @@ const NowPlaying = () => {
 
   if (!song) {
     return (
-      <div className="flex-col p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+      <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
         <div className="flex items-center space-x-4">
           <FaSpotify size={24} className="text-green-500" />
           <h2 className="text-lg font-bold">now playing</h2>
@@ -90,6 +90,7 @@ const NowPlaying = () => {
           <div>
             <h3 className="text-lg font-bold">nothing</h3>
             <p className="text-sm text-gray-500">no one</p>
+            <p className="text-xs text-gray-500">probably sleeping</p>
           </div>
         </div>
       </div>
@@ -99,17 +100,17 @@ const NowPlaying = () => {
   const progressPercentage = (currentProgress / song.duration) * 100;
 
   return (
-    <div className="flex-col p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+    <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
       <div className="flex items-center space-x-4">
         <FaSpotify size={24} className="text-green-500" />
         <h2 className="text-lg font-bold">Now Playing</h2>
       </div>
       <div className="flex items-center space-x-4">
         <img src={song.albumImage} alt={song.name} className="w-32 h-32 rounded-lg" />
-        <div>
+        <div className='w-full'>
           <h3 className="text-lg font-bold">{song.name}</h3>
           <p className="text-sm text-gray-500">{song.artists}</p>
-          <div className="w-full h-1 bg-gray-600 rounded-full mt-2">
+          <div className="h-1 bg-gray-600 rounded-full mt-2">
             <div
               className="h-full bg-green-500 rounded-full transition-all"
               style={{ width: `${progressPercentage}%` }}
