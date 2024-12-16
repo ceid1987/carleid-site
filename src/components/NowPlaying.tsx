@@ -15,56 +15,56 @@ const NowPlaying = () => {
   const [currentProgress, setCurrentProgress] = useState<number>(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch data from the API every 30 seconds
-  useEffect(() => {
-    const fetchNowPlaying = async () => {
-      try {
-        const res = await fetch('/api/now-playing');
-        const data = await res.json();
-        if (data.isPlaying) {
-          setSong({
-            name: data.name,
-            artists: data.artists,
-            albumImage: data.albumImage,
-            isPlaying: data.isPlaying,
-            progress: data.progress,
-            duration: data.duration,
-          });
-          setCurrentProgress(data.progress); // Set initial progress from API
-        } else {
-          setSong(null);
-          setCurrentProgress(0);
-        }
-      } catch (error) {
-        console.error('Error fetching now playing:', error);
+  const fetchNowPlaying = async () => {
+    try {
+      const res = await fetch('/api/now-playing');
+      const data = await res.json();
+      if (data.isPlaying) {
+        setSong({
+          name: data.name,
+          artists: data.artists,
+          albumImage: data.albumImage,
+          isPlaying: data.isPlaying,
+          progress: data.progress,
+          duration: data.duration,
+        });
+        setCurrentProgress(data.progress);
+      } else {
         setSong(null);
         setCurrentProgress(0);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching now playing:', error);
+      setSong(null);
+      setCurrentProgress(0);
+    }
+  };
 
-    // Initial API call
-    fetchNowPlaying();
+  // Fetch API data every 30 seconds
+  useEffect(() => {
+    fetchNowPlaying(); // Initial API call
 
-    // Refresh API every 30 seconds
     const apiInterval = setInterval(fetchNowPlaying, 30000);
 
     return () => clearInterval(apiInterval); // Cleanup on unmount
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
-  // Simulate progress locally
+  // Simulate progress locally and handle end of song
   useEffect(() => {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
     }
 
     if (song && song.isPlaying) {
-      // Start simulating progress
+      // Start progress simulation
       progressIntervalRef.current = setInterval(() => {
         setCurrentProgress((prev) => {
           if (prev < song.duration) {
             return prev + 1000; // Increment progress by 1 second
           } else {
-            clearInterval(progressIntervalRef.current!); // Clear when song ends
+            // Song has ended, call the API to fetch the next song
+            clearInterval(progressIntervalRef.current!);
+            fetchNowPlaying(); // Fetch the next song immediately
             return prev;
           }
         });
@@ -73,10 +73,10 @@ const NowPlaying = () => {
 
     return () => {
       if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current); // Cleanup progress simulation
+        clearInterval(progressIntervalRef.current); // Cleanup on unmount or song change
       }
     };
-  }, [song]); // Restart simulation when song changes
+  }, [song]);
 
   if (!song) {
     return (
