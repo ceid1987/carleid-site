@@ -10,6 +10,7 @@ import Navbar from '../components/Navbar';
 import AnimatedTextS1 from '../components/AnimatedTextS1';
 import AnimatedArrow from '../components/AnimatedArrow';
 import Maintenance from '../components/Maintenance';
+import ContentCard from '../components/ContentCard';
 import NowPlaying from '../components/NowPlaying';
 
 // Styles
@@ -64,7 +65,8 @@ const Home: React.FC = () => {
         </h2>
         <AnimatedArrow visible={showArrow} />
       </div>
-      <div id="whoami" className="min-h-screen flex flex-col items-center justify-center bg-black">
+      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center bg-black">
+        <ContentCard title={'Notice'} body={'This website is under construction.'} imageUrl={''} />
         <NowPlaying />
       </div>
     </div>
