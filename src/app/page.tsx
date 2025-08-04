@@ -68,7 +68,7 @@ const Home: React.FC = () => {
       <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center">
         <ContentCard
           title="Maintenance"
-          body="This website is under maintenance. Please check back later."
+          body="This website is under maintenance. Please check back later..."
           imageUrl=""
         />
         <NowPlaying />   
