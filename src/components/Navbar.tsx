@@ -10,8 +10,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentSection }) => {
   const links = [
     { href: '#home', label: 'home' },
     { href: '#whoami', label: 'whoami' },
-    { href: '#whoami', label: 'projects' },
-    { href: '#whoami', label: 'contact' }
+    { href: '#projects', label: 'projects' },
+    { href: '#contact', label: 'contact' }
   ];
 
   return (

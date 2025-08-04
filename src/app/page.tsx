@@ -65,10 +65,18 @@ const Home: React.FC = () => {
         </h2>
         <AnimatedArrow visible={showArrow} />
       </div>
-      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center bg-black">
-        <ContentCard title={'Notice'} body={'This website is under construction.'} imageUrl={''} />
+      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center">
+        <h2 className={"text-xl mt-4 md:text-xl lg:text-2xl"}>whoami</h2>
         <NowPlaying />
       </div>
+      <div id="projects" className="min-h-screen flex flex-col items-center space-y-4 justify-center">
+        <h2 className={"text-xl mt-4 md:text-xl lg:text-2xl"}>projects</h2>
+        <ContentCard
+          title="carleid.dev"
+          body="This is my personal website, built with Next.js and React."
+          imageUrl=''
+        />
+      </div> 
     </div>
   );
 };
