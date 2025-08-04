@@ -80,7 +80,7 @@ const NowPlaying = () => {
 
   if (!song) {
     return (
-      <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+      <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
         <div className="flex items-center space-x-4">
           <FaSpotify size={24} className="text-green-500" />
           <h2 className="text-lg font-bold">now playing</h2>
@@ -100,7 +100,7 @@ const NowPlaying = () => {
   const progressPercentage = (currentProgress / song.duration) * 100;
 
   return (
-    <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40">
+    <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
       <div className="flex items-center space-x-4">
         <FaSpotify size={24} className="text-green-500" />
         <h2 className="text-lg font-bold">Now Playing</h2>

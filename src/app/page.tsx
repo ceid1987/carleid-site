@@ -65,10 +65,14 @@ const Home: React.FC = () => {
         </h2>
         <AnimatedArrow visible={showArrow} />
       </div>
-      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center bg-black">
-        <ContentCard title={'Notice'} body={'This website is under construction.'} imageUrl={''} />
-        <NowPlaying />
-      </div>
+      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center">
+        <ContentCard
+          title="Maintenance"
+          body="This website is under maintenance. Please check back later."
+          imageUrl=""
+        />
+        <NowPlaying />   
+      </div>    
     </div>
   );
 };
