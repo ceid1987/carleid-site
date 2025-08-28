@@ -12,6 +12,7 @@ import AnimatedArrow from '../components/AnimatedArrow';
 import Maintenance from '../components/Maintenance';
 import ContentCard from '../components/ContentCard';
 import NowPlaying from '../components/NowPlaying';
+import Carousel from '../components/Carousel';
 
 // Styles
 import styles from '../styles/Parallax.module.css';
@@ -65,14 +66,16 @@ const Home: React.FC = () => {
         </h2>
         <AnimatedArrow visible={showArrow} />
       </div>
-      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-4 justify-center">
-        <ContentCard
-          title="Maintenance"
-          body="This website is under maintenance. Please check back later..."
-          imageUrl=""
-        />
-        <NowPlaying />   
-      </div>    
+      <div id="whoami" className="min-h-screen flex flex-col items-center space-y-8 justify-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">whoami</h2>
+        <Carousel />
+      </div>
+      <div id="projects" className="min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">projects</h2>
+      </div>
+      <div id="contact" className="min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">contact</h2>
+      </div>
     </div>
   );
 };

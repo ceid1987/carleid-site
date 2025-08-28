@@ -2,7 +2,95 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { FaSpotify } from 'react-icons/fa';
 
+interface ScrollingTextProps {
+  text: string;
+  className: string;
+}
+
+const ScrollingText: React.FC<ScrollingTextProps> = ({ text, className }) => {
+  const [shouldScroll, setShouldScroll] = useState(false);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setShouldScroll(false);
+    
+    const measureText = () => {
+      if (textRef.current && containerRef.current) {
+        const textWidth = textRef.current.scrollWidth;
+        const containerWidth = containerRef.current.clientWidth;
+        setShouldScroll(textWidth > containerWidth);
+      }
+    };
+
+    setTimeout(measureText, 0);
+  }, [text]);
+
+  useEffect(() => {
+    if (shouldScroll && animationRef.current) {
+      const element = animationRef.current;
+      const textWidth = element.scrollWidth / 3; // actual text width (since we have 3 copies)
+      const speed = 30; // pixels per second - CONSTANT SPEED FOR ALL
+      const moveTime = textWidth / speed; // time to scroll one text width
+      
+      let isMoving = true;
+      
+      const runCycle = () => {
+        if (isMoving) {
+          element.style.animation = `marquee-move ${moveTime}s linear forwards`;
+          setTimeout(() => {
+            isMoving = false;
+            element.style.animation = `marquee-pause 1s linear forwards`;
+            setTimeout(() => {
+              element.style.transform = 'translateX(0%)';
+              isMoving = true;
+              runCycle();
+            }, 2000);
+          }, moveTime * 1000);
+        }
+      };
+      
+      runCycle();
+    }
+  }, [shouldScroll]);
+
+  return (
+    <div ref={containerRef} className="overflow-hidden relative">
+      {shouldScroll ? (
+        <div ref={animationRef} className="whitespace-nowrap inline-flex">
+          <span className={`${className} pr-8`}>{text}</span>
+          <span className={`${className} pr-8`}>{text}</span>
+          <span className={`${className} pr-8`}>{text}</span>
+        </div>
+      ) : (
+        <span ref={textRef} className={`${className} truncate block`}>
+          {text}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const NowPlaying = () => {
+  useEffect(() => {
+    // Add marquee animation CSS if it doesn't exist
+    const styleId = 'marquee-animation';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = `
+        @keyframes marquee-move {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-33.333%); }
+        }
+        @keyframes marquee-pause {
+          0%, 100% { transform: translateX(-33.333%); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
   const [song, setSong] = useState<{
     name: string;
     artists: string;
@@ -80,17 +168,17 @@ const NowPlaying = () => {
 
   if (!song) {
     return (
-      <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
-        <div className="flex items-center space-x-4">
-          <FaSpotify size={24} className="text-green-500" />
-          <h2 className="text-lg font-bold">now playing</h2>
+      <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-lg bg-gray-800 backdrop-blur-sm bg-opacity-10">
+        <div className="flex items-center space-x-3 md:space-x-4">
+          <FaSpotify size={20} className="text-green-500 md:w-6 md:h-6" />
+          <h2 className="text-base md:text-lg font-bold">now playing</h2>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="w-32 h-32 rounded-lg bg-gray-900" />
-          <div>
-            <h3 className="text-lg font-bold">nothing</h3>
-            <p className="text-sm text-gray-500">no one</p>
-            <p className="text-xs text-gray-500">probably sleeping</p>
+        <div className="flex items-center space-x-3 md:space-x-4">
+          <div className="w-20 h-20 md:w-32 md:h-32 rounded-lg bg-gray-900 flex-shrink-0" />
+          <div className="min-w-0 flex-1">
+            <ScrollingText text="nothing" className="text-sm md:text-base font-bold" />
+            <ScrollingText text="no one" className="text-sm md:text-base text-gray-500" />
+            <p className="text-xs text-gray-500 truncate">probably sleeping</p>
           </div>
         </div>
       </div>
@@ -100,16 +188,16 @@ const NowPlaying = () => {
   const progressPercentage = (currentProgress / song.duration) * 100;
 
   return (
-    <div className="flex-col min-w-96 p-4 space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
-      <div className="flex items-center space-x-4">
-        <FaSpotify size={24} className="text-green-500" />
-        <h2 className="text-lg font-bold">Now Playing</h2>
+    <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
+      <div className="flex items-center space-x-3 md:space-x-4">
+        <FaSpotify size={20} className="text-green-500 md:w-6 md:h-6" />
+        <h2 className="text-base md:text-lg font-bold">Now Playing</h2>
       </div>
-      <div className="flex items-center space-x-4">
-        <img src={song.albumImage} alt={song.name} className="w-32 h-32 rounded-lg" />
-        <div className='w-full'>
-          <h3 className="text-lg font-bold">{song.name}</h3>
-          <p className="text-sm text-gray-500">{song.artists}</p>
+      <div className="flex items-center space-x-3 md:space-x-4">
+        <img src={song.albumImage} alt={song.name} className="w-20 h-20 md:w-32 md:h-32 rounded-lg flex-shrink-0" />
+        <div className='w-full min-w-0 flex-1'>
+          <ScrollingText text={song.name} className="text-sm font-bold" />
+          <ScrollingText text={song.artists} className="text-sm text-gray-500" />
           <div className="h-1 bg-gray-600 rounded-full mt-2">
             <div
               className="h-full bg-green-500 rounded-full transition-all"
