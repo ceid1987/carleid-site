@@ -15,7 +15,7 @@ interface CarouselItem {
 }
 
 const Carousel: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(1); // Start at 1 because we'll add duplicate at beginning
   const [showOverlay, setShowOverlay] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
@@ -48,28 +48,64 @@ const Carousel: React.FC = () => {
     }
   ];
 
+  // Create extended array with duplicates for smooth infinite loop
+  const extendedItems = [items[items.length - 1], ...items, items[0]];
+
   const nextSlide = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    const newIndex = (currentIndex + 1) % items.length;
+    
+    const newIndex = currentIndex + 1;
     setCurrentIndex(newIndex);
+    
     // Maintain overlay state if it was showing
-    if (showOverlay === currentIndex) {
-      setShowOverlay(newIndex);
+    const realIndex = getRealIndex(newIndex);
+    if (showOverlay !== null) {
+      setShowOverlay(realIndex);
     }
-    setTimeout(() => setIsTransitioning(false), 300);
+    
+    setTimeout(() => {
+      // If we've moved to the duplicate at the end, snap to the real first item
+      if (newIndex === extendedItems.length - 1) {
+        setCurrentIndex(1);
+        if (showOverlay !== null) {
+          setShowOverlay(0);
+        }
+      }
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const prevSlide = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    const newIndex = (currentIndex - 1 + items.length) % items.length;
+    
+    const newIndex = currentIndex - 1;
     setCurrentIndex(newIndex);
+    
     // Maintain overlay state if it was showing
-    if (showOverlay === currentIndex) {
-      setShowOverlay(newIndex);
+    const realIndex = getRealIndex(newIndex);
+    if (showOverlay !== null) {
+      setShowOverlay(realIndex);
     }
-    setTimeout(() => setIsTransitioning(false), 300);
+    
+    setTimeout(() => {
+      // If we've moved to the duplicate at the beginning, snap to the real last item
+      if (newIndex === 0) {
+        setCurrentIndex(items.length);
+        if (showOverlay !== null) {
+          setShowOverlay(items.length - 1);
+        }
+      }
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  // Helper function to get real item index from extended array index
+  const getRealIndex = (extendedIndex: number) => {
+    if (extendedIndex === 0) return items.length - 1; // First duplicate
+    if (extendedIndex === extendedItems.length - 1) return 0; // Last duplicate
+    return extendedIndex - 1; // Regular items
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -143,14 +179,15 @@ const Carousel: React.FC = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {items.map((item, index) => {
+        {extendedItems.map((item, index) => {
           let position = index - currentIndex;
           const offset = dragOffset * 0.5;
-          const isCurrentItem = index === currentIndex;
+          const realIndex = getRealIndex(index);
+          const isCurrentItem = realIndex === getRealIndex(currentIndex);
           
           return (
             <div
-              key={item.id}
+              key={`${item.id}-${index}`}
               className={`absolute inset-0 w-full h-96 ${isTransitioning ? 'transition-transform duration-300 ease-out' : ''}`}
               style={{
                 transform: `translateX(${position * 100 + offset}%)`
@@ -227,7 +264,7 @@ const Carousel: React.FC = () => {
         }}
         onMouseEnter={() => setIsHoveringButton(true)}
         onMouseLeave={() => setIsHoveringButton(false)}
-        className="absolute top-1/2 left-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
+        className="hidden md:block absolute top-1/2 left-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
         type="button"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +284,7 @@ const Carousel: React.FC = () => {
         }}
         onMouseEnter={() => setIsHoveringButton(true)}
         onMouseLeave={() => setIsHoveringButton(false)}
-        className="absolute top-1/2 right-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
+        className="hidden md:block absolute top-1/2 right-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
         type="button"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,9 +297,9 @@ const Carousel: React.FC = () => {
         {items.map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => setCurrentIndex(index + 1)} // +1 because of duplicate at start
             className={`w-3 h-3 rounded-full transition-all duration-200 ${
-              index === currentIndex 
+              index === getRealIndex(currentIndex)
                 ? 'bg-purple-500' 
                 : 'bg-white bg-opacity-30 hover:bg-opacity-50'
             }`}
