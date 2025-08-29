@@ -16,10 +16,11 @@ interface CarouselItem {
 
 const Carousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(1); // Start at 1 because we'll add duplicate at beginning
-  const [showOverlay, setShowOverlay] = useState<number | null>(null);
+  const [showOverlay, setShowOverlay] = useState<boolean>(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [touchStartTime, setTouchStartTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [lastInteractionWasTouch, setLastInteractionWasTouch] = useState(false);
@@ -58,19 +59,12 @@ const Carousel: React.FC = () => {
     const newIndex = currentIndex + 1;
     setCurrentIndex(newIndex);
     
-    // Maintain overlay state if it was showing
-    const realIndex = getRealIndex(newIndex);
-    if (showOverlay !== null) {
-      setShowOverlay(realIndex);
-    }
+    // Overlay state is now persistent - no need to change it
     
     setTimeout(() => {
       // If we've moved to the duplicate at the end, snap to the real first item
       if (newIndex === extendedItems.length - 1) {
         setCurrentIndex(1);
-        if (showOverlay !== null) {
-          setShowOverlay(0);
-        }
       }
       setIsTransitioning(false);
     }, 300);
@@ -83,19 +77,12 @@ const Carousel: React.FC = () => {
     const newIndex = currentIndex - 1;
     setCurrentIndex(newIndex);
     
-    // Maintain overlay state if it was showing
-    const realIndex = getRealIndex(newIndex);
-    if (showOverlay !== null) {
-      setShowOverlay(realIndex);
-    }
+    // Overlay state is now persistent - no need to change it
     
     setTimeout(() => {
       // If we've moved to the duplicate at the beginning, snap to the real last item
       if (newIndex === 0) {
         setCurrentIndex(items.length);
-        if (showOverlay !== null) {
-          setShowOverlay(items.length - 1);
-        }
       }
       setIsTransitioning(false);
     }, 300);
@@ -114,6 +101,7 @@ const Carousel: React.FC = () => {
     const touch = e.targetTouches[0].clientX;
     setTouchStart(touch);
     setTouchEnd(0);
+    setTouchStartTime(Date.now());
     setIsDragging(false);
     setDragOffset(0);
   };
@@ -133,29 +121,28 @@ const Carousel: React.FC = () => {
     setIsDragging(false);
     setDragOffset(0);
     
-    if (!touchEnd) {
-      // This was a tap (no movement)
+    const touchDuration = Date.now() - touchStartTime;
+    const distance = touchEnd ? touchStart - touchEnd : 0;
+    
+    // A tap is quick (under 200ms) and has minimal movement (under 20px)
+    const isTap = touchDuration < 200 && Math.abs(distance) < 20;
+    
+    if (isTap) {
+      // This was a tap - toggle overlay
       toggleOverlay();
-      return;
-    }
-    
-    const distance = touchStart - touchEnd;
-    const isSwipe = Math.abs(distance) > 50;
-    
-    if (isSwipe) {
-      // This was a swipe
+    } else if (Math.abs(distance) > 30) {
+      // This was a swipe - change slide, maintain overlay state
       if (distance > 0) {
         nextSlide();
       } else {
         prevSlide();
       }
-    } else {
-      // This was a tap (small movement)
-      toggleOverlay();
     }
+    // If it's neither a clear tap nor swipe, do nothing
     
     setTouchStart(0);
     setTouchEnd(0);
+    setTouchStartTime(0);
   };
 
   const handleMouseClick = () => {
@@ -168,7 +155,7 @@ const Carousel: React.FC = () => {
   };
 
   const toggleOverlay = () => {
-    setShowOverlay(showOverlay === currentIndex ? null : currentIndex);
+    setShowOverlay(!showOverlay);
   };
 
   return (
@@ -194,7 +181,7 @@ const Carousel: React.FC = () => {
               }}
             >
             <div 
-              className="relative w-full h-full group cursor-pointer"
+              className="relative w-full h-full group cursor-pointer select-none"
               onClick={handleMouseClick}
             >
                 <Image
@@ -202,13 +189,13 @@ const Carousel: React.FC = () => {
                   alt={item.alt}
                   fill
                   className={`object-cover transition-all duration-300 ${
-                    (showOverlay === index && isCurrentItem) ? 'brightness-50' : (isHoveringButton && isCurrentItem) ? 'brightness-50' : 'group-hover:brightness-50'
+                    (showOverlay && isCurrentItem) ? 'brightness-50' : (isHoveringButton && isCurrentItem) ? 'brightness-50' : 'group-hover:brightness-50'
                   }`}
                 />
               
                 {/* Touch indicator */}
                 <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 z-5 ${
-                  showOverlay === index ? 'opacity-0' : (isHoveringButton || false) ? 'opacity-0' : 'group-hover:opacity-0'
+                  (showOverlay && isCurrentItem) ? 'opacity-0' : (isHoveringButton || false) ? 'opacity-0' : 'group-hover:opacity-0'
                 }`}>
                   <div className="animate-pulse">
                     <svg className="w-12 h-12 md:w-16 md:h-16 text-white" fill="currentColor" viewBox="0 0 24 24" style={{animationDuration: '2s'}}>
@@ -219,7 +206,7 @@ const Carousel: React.FC = () => {
                 
                 {/* Hover overlay */}
                 <div className={`absolute inset-0 flex flex-col transition-opacity duration-300 z-10 ${
-                  showOverlay === index ? 'opacity-100' : (isHoveringButton && isCurrentItem) ? 'opacity-100 md:opacity-100' : 'opacity-0 md:group-hover:opacity-100'
+                  (showOverlay && isCurrentItem) ? 'opacity-100' : (isHoveringButton && isCurrentItem) ? 'opacity-100 md:opacity-100' : 'opacity-0 md:group-hover:opacity-100'
                 }`}>
                   {item.isSpotify ? (
                     <div className="flex-1 flex items-center justify-center p-4">
