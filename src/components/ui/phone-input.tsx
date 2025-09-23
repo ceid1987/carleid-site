@@ -38,9 +38,9 @@ interface PhoneInputProps
 
 // Get all countries with calling codes
 const getAllCountries = (): CountryData[] => {
-  return lookup.countries({ status: 'assigned' }).filter(country =>
+  return lookup.countries({ status: 'assigned' }).filter((country: any) =>
     country.countryCallingCodes && country.countryCallingCodes.length > 0
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  ).sort((a: any, b: any) => a.name.localeCompare(b.name));
 };
 
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(

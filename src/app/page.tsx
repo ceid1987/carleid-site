@@ -145,10 +145,10 @@ const Home: React.FC = () => {
         <div className="w-full max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-lg text-gray-300 mb-4">
-              Let's talk.
+              Let&apos;s talk.
             </p>
             <p className="text-gray-400">
-              Leave a message and I'll get back to you as soon as possible.
+              Leave a message and I&apos;ll get back to you as soon as possible.
             </p>
           </div>
           <ContactForm />

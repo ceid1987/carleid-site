@@ -87,7 +87,7 @@ const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) => {
               <p>Under GDPR, you have the right to:</p>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>Request information about data processing</li>
-                <li>Request deletion of your data (though it's automatically deleted)</li>
+                <li>Request deletion of your data (though it&apos;s automatically deleted)</li>
                 <li>Withdraw consent at any time</li>
                 <li>File a complaint with a supervisory authority</li>
               </ul>
