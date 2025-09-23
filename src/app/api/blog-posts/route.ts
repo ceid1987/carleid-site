@@ -82,8 +82,20 @@ const getBlogPosts = async (): Promise<BlogPostsResponse> => {
     throw new Error('Failed to fetch blog posts');
   }
 
+  const data = await response.json();
+
+  // Transform relative URLs to absolute URLs
+  if (data.data) {
+    data.data = data.data.map((post: BlogPost) => {
+      if (post.featuredImage?.url && !post.featuredImage.url.startsWith('http')) {
+        post.featuredImage.url = `${STRAPI_URL}${post.featuredImage.url}`;
+      }
+      return post;
+    });
+  }
+
   console.log('Fetched blog posts at:', new Date().toISOString());
-  return response.json();
+  return data;
 };
 
 export async function GET() {

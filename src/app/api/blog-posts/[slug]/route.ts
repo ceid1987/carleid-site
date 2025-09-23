@@ -33,8 +33,15 @@ const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
 
   const data = await response.json();
   console.log('Fetched blog post by slug at:', new Date().toISOString());
-  
-  return data.data.length > 0 ? data.data[0] : null;
+
+  const blogPost = data.data.length > 0 ? data.data[0] : null;
+
+  // Transform relative URLs to absolute URLs
+  if (blogPost?.featuredImage?.url && !blogPost.featuredImage.url.startsWith('http')) {
+    blogPost.featuredImage.url = `${STRAPI_URL}${blogPost.featuredImage.url}`;
+  }
+
+  return blogPost;
 };
 
 export async function GET(

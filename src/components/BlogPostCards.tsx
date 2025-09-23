@@ -1,0 +1,101 @@
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import BlogPostCard from './BlogPostCard';
+import BlinkingDots from './BlinkingDots';
+import { BlogPost } from '../app/api/blog-posts/route';
+
+interface BlogPostCardsProps {
+  blogPosts: BlogPost[];
+  loading: boolean;
+}
+
+const BlogPostCards: React.FC<BlogPostCardsProps> = ({ blogPosts, loading }) => {
+  // Pagination logic
+  const postsPerPage = 3;
+  const totalPages = Math.ceil(blogPosts.length / postsPerPage);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const router = useRouter();
+
+  const handleBlogPostClick = (slug: string) => {
+    router.push(`/blog/${slug}`);
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Calculate current posts to display
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const currentPosts = blogPosts.slice(startIndex, endIndex);
+
+  // Check if current page is the last page
+  const isLastPage = currentPage === totalPages;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+        <span className="ml-3 text-gray-300">Loading blog posts...</span>
+      </div>
+    );
+  }
+
+  if (blogPosts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-300 text-lg">
+          Still writing blog posts<BlinkingDots />
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {/* Blog Posts */}
+      <div className="space-y-6">
+        {currentPosts.map((post) => (
+          <BlogPostCard
+            key={post.id}
+            post={post}
+            onClick={() => handleBlogPostClick(post.slug)}
+          />
+        ))}
+
+        {/* Show "Still writing" message after posts on last page only */}
+        {isLastPage && (
+          <div className="text-center py-12">
+            <p className="text-gray-300 text-lg">
+              Still writing blog posts<BlinkingDots />
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Section Navigator */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-12 space-x-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`w-8 h-8 rounded-full font-medium text-sm transition-all duration-200 ${
+                index + 1 === currentPage
+                  ? 'bg-purple-600 text-white border border-purple-600'
+                  : 'bg-transparent text-gray-300 border border-white/20 hover:border-white/40 hover:text-white'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default BlogPostCards;

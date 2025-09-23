@@ -14,7 +14,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post, onClick }) => {
 
   return (
     <div 
-      className="flex flex-col md:flex-row p-4 space-y-4 md:space-y-0 md:space-x-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-40 shadow-lg cursor-pointer hover:bg-opacity-50 transition-all duration-200 group"
+      className="flex flex-col md:flex-row p-4 space-y-4 md:space-y-0 md:space-x-4 rounded-lg bg-black/30 backdrop-blur-md border border-white/10 shadow-lg cursor-pointer hover:bg-black/40 hover:border-white/20 transition-all duration-200 group"
       onClick={onClick}
     >
       {/* Content Section */}
