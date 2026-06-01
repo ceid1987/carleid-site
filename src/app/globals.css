@@ -12,6 +12,33 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Keep dark field styling when the browser autofills inputs
+   (otherwise Chrome/Safari paint a white/yellow background). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.3) inset;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Blog theme-toggle icon transition: outgoing icon swoops left + fades out,
+   incoming icon swoops in from the right + fades in. */
+@keyframes icon-swoop-in {
+  from { transform: translateX(14px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes icon-swoop-out {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-14px); opacity: 0; }
+}
+.icon-swoop-in  { animation: icon-swoop-in  300ms ease forwards; }
+.icon-swoop-out { animation: icon-swoop-out 300ms ease forwards; }
+
 /* globals.css */
 
 .bg-background {

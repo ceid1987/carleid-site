@@ -28,6 +28,19 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
     message: string;
   }>({ type: null, message: '' });
 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const MESSAGE_MIN = 10;
+
+  // Mirrors the phone field: green border when valid, red when filled-but-invalid,
+  // default otherwise. Background/text stay dark regardless of fill state.
+  const fieldClasses = (value: string, isValid: boolean) => {
+    const base =
+      'w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200';
+    if (isValid) return `${base} border-green-500 focus:ring-green-500 focus:border-transparent`;
+    if (value.trim().length > 0) return `${base} border-red-500 focus:ring-red-500 focus:border-transparent`;
+    return `${base} border-white/20 focus:ring-purple-500/50 focus:border-purple-500/50`;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -107,7 +120,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
               value={formData.firstName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200"
+              className={fieldClasses(formData.firstName, formData.firstName.trim().length > 0)}
               placeholder="Your first name"
             />
           </div>
@@ -123,7 +136,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
               value={formData.lastName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200"
+              className={fieldClasses(formData.lastName, formData.lastName.trim().length > 0)}
               placeholder="Your last name"
             />
           </div>
@@ -140,7 +153,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200"
+            className={fieldClasses(formData.email, emailPattern.test(formData.email))}
             placeholder="your.email@example.com"
           />
         </div>
@@ -167,10 +180,17 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
             value={formData.message}
             onChange={handleInputChange}
             required
+            minLength={MESSAGE_MIN}
             rows={6}
-            className="w-full px-4 py-3 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200 resize-vertical"
+            className={`${fieldClasses(formData.message, formData.message.trim().length >= MESSAGE_MIN)} resize-vertical`}
             placeholder="Tell me about your project or just say hello..."
           />
+          {formData.message.trim().length > 0 && formData.message.trim().length < MESSAGE_MIN && (
+            <p className="mt-2 text-xs text-red-400">
+              {MESSAGE_MIN - formData.message.trim().length} more character
+              {MESSAGE_MIN - formData.message.trim().length === 1 ? '' : 's'} needed (minimum {MESSAGE_MIN}).
+            </p>
+          )}
         </div>
 
         {submitStatus.type && (
