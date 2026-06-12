@@ -287,6 +287,30 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
                   {children}
                 </blockquote>
               ),
+              table: ({ children }) => (
+                <div className="overflow-x-auto my-6">
+                  <table className={`w-full border-collapse text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {children}
+                  </table>
+                </div>
+              ),
+              thead: ({ children }) => (
+                <thead className={isDark ? 'bg-gray-800' : 'bg-gray-100'}>{children}</thead>
+              ),
+              tbody: ({ children }) => <tbody>{children}</tbody>,
+              tr: ({ children }) => (
+                <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>{children}</tr>
+              ),
+              th: ({ children }) => (
+                <th className={`px-4 py-2 text-left font-semibold border ${isDark ? 'border-gray-700 text-white' : 'border-gray-200 text-gray-900'}`}>
+                  {children}
+                </th>
+              ),
+              td: ({ children }) => (
+                <td className={`px-4 py-2 align-top border ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                  {children}
+                </td>
+              ),
               img: ({ src, alt }) => (
                 <img 
                   src={src} 
