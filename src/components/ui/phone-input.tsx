@@ -1,18 +1,9 @@
 "use client";
 import { useState, forwardRef, useEffect, useRef } from "react";
-import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
+import parsePhoneNumber from "libphonenumber-js";
 import { CircleFlag } from "react-circle-flags";
 import { lookup } from "country-data-list";
-import { z } from "zod";
 import { cn } from "@/lib/utils";
-
-export const phoneSchema = z.string().refine((value) => {
-  try {
-    return isValidPhoneNumber(value);
-  } catch {
-    return false;
-  }
-}, "Invalid phone number");
 
 export type CountryData = {
   alpha2: string;
@@ -36,12 +27,11 @@ interface PhoneInputProps
   className?: string;
 }
 
-// Get all countries with calling codes
-const getAllCountries = (): CountryData[] => {
-  return lookup.countries({ status: 'assigned' }).filter((country: any) =>
-    country.countryCallingCodes && country.countryCallingCodes.length > 0
-  ).sort((a: any, b: any) => a.name.localeCompare(b.name));
-};
+// All countries with calling codes, sorted once at module load.
+const countries: CountryData[] = lookup
+  .countries({ status: 'assigned' })
+  .filter((country: any) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
+  .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
   (
@@ -65,9 +55,6 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    const countries = getAllCountries();
-
-    // Filter countries based on search
     const filteredCountries = countries.filter(country =>
       country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       country.countryCallingCodes[0].includes(searchQuery)
@@ -178,7 +165,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             <button
               type="button"
               onClick={toggleDropdown}
-              className="flex items-center px-3 py-3 bg-black/30 backdrop-blur-sm border border-white/20 border-r-0 rounded-l-lg text-white hover:bg-black/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-200 min-w-[200px] h-full"
+              className="flex items-center px-3 py-3 bg-white/[0.03] backdrop-blur-md border border-white/10 border-r-0 rounded-l-lg text-white hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-200 min-w-[200px] h-full"
             >
               {selectedCountry ? (
                 <>
@@ -202,7 +189,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute top-full left-0 z-50 w-80 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg shadow-xl mt-1 max-h-80 overflow-hidden">
+              <div className="absolute top-full left-0 z-50 w-80 bg-[#0e0e12]/95 backdrop-blur-md border border-white/10 rounded-lg shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)] mt-1 max-h-80 overflow-hidden">
                 {/* Search Input */}
                 <div className="p-3 border-b border-white/10">
                   <input
@@ -211,7 +198,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                     placeholder="Search countries..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-3 py-2 bg-black/30 backdrop-blur-sm border border-white/20 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
                   />
                 </div>
 
@@ -223,7 +210,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                         key={country.alpha2}
                         type="button"
                         onClick={() => handleCountrySelect(country)}
-                        className="w-full flex items-center px-4 py-3 hover:bg-black/30 text-left text-white transition-colors border-b border-white/10 last:border-b-0"
+                        className="w-full flex items-center px-4 py-3 hover:bg-purple-500/10 text-left text-white transition-colors border-b border-white/[0.06] last:border-b-0"
                       >
                         <CircleFlag countryCode={country.alpha2.toLowerCase()} height={20} width={20} className="mr-3 flex-shrink-0" />
                         <span className="text-sm flex-1">
@@ -250,10 +237,10 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
               onChange={handlePhoneNumberChange}
               placeholder={placeholder || "Enter phone number"}
               className={cn(
-                "w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200",
+                "w-full px-4 py-3 bg-white/[0.03] backdrop-blur-md border rounded-r-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200",
                 isValid === true && "border-green-500 focus:ring-green-500",
                 isValid === false && "border-red-500 focus:ring-red-500",
-                isValid === null && "border-white/20 focus:ring-purple-500/50"
+                isValid === null && "border-white/10 focus:ring-purple-500/50"
               )}
               {...props}
             />

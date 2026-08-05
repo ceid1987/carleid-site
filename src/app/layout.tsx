@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google";
+import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 
-const roboto = Roboto_Mono({ subsets: ["latin"] });
+// Same pairing as homelab.carleid.dev: Roboto for body text, Roboto Mono for
+// headings/labels (applied via globals.css and font-mono utilities).
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-sans",
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "carleid.dev",
@@ -15,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={roboto.className}>{children}</body>
+    <html lang="en" className={`${roboto.variable} ${robotoMono.variable}`}>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

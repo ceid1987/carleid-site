@@ -1,27 +1,12 @@
 import { NextResponse } from 'next/server';
-import { BlogPost } from '../route';
-
-let STRAPI_URL: string;
-let STRAPI_API_TOKEN: string;
-
-if (process.env.NODE_ENV === 'development') {
-  // Local environment
-  STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
-  STRAPI_API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
-} else {
-  // Production environment
-  STRAPI_URL = process.env.STRAPI_URL || '';
-  STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || '';
-}
+import { STRAPI_URL, hasStrapiConfig, strapiHeaders } from '@/lib/strapi';
+import { BlogPost, absolutizeFeaturedImage } from '@/lib/blog';
 
 const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
   const response = await fetch(
     `${STRAPI_URL}/api/blog-posts?filters[slug][$eq]=${slug}&populate=*`,
     {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+      headers: strapiHeaders,
       cache: 'no-store',
     }
   );
@@ -32,16 +17,8 @@ const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
   }
 
   const data = await response.json();
-  console.log('Fetched blog post by slug at:', new Date().toISOString());
-
-  const blogPost = data.data.length > 0 ? data.data[0] : null;
-
-  // Transform relative URLs to absolute URLs
-  if (blogPost?.featuredImage?.url && !blogPost.featuredImage.url.startsWith('http')) {
-    blogPost.featuredImage.url = `${STRAPI_URL}${blogPost.featuredImage.url}`;
-  }
-
-  return blogPost;
+  const post: BlogPost | undefined = data.data?.[0];
+  return post ? absolutizeFeaturedImage(post) : null;
 };
 
 export async function GET(
@@ -49,8 +26,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    // Check if required environment variables are present
-    if (!STRAPI_URL || !STRAPI_API_TOKEN) {
+    if (!hasStrapiConfig()) {
       console.error('Missing required environment variables for Strapi API');
       return NextResponse.json(
         { error: 'Server configuration error' },
@@ -59,7 +35,6 @@ export async function GET(
     }
 
     const { slug } = await params;
-
     if (!slug) {
       return NextResponse.json(
         { error: 'Slug parameter is required' },
@@ -67,9 +42,7 @@ export async function GET(
       );
     }
 
-    // Fetch blog post from Strapi
     const blogPost = await getBlogPostBySlug(slug);
-
     if (!blogPost) {
       return NextResponse.json(
         { error: 'Blog post not found' },

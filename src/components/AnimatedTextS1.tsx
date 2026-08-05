@@ -1,11 +1,11 @@
-// src/components/AnimatedText.tsx
 "use client";
 
 import React, { useEffect, useRef } from 'react';
 import Typed from 'typed.js';
-import styles from '../styles/AnimatedText.module.css';
+import styles from '@/styles/AnimatedText.module.css';
 
-const AnimatedText: React.FC = () => {
+// Terminal-style typed.js headline for the hero section.
+const AnimatedTextS1: React.FC = () => {
   const el = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const AnimatedText: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center text-xl md:text-2xl lg:text-4xl px-4 md:px-8 lg:px-16">
+    <div className="flex flex-col items-center font-mono text-xl md:text-2xl lg:text-4xl px-4 md:px-8 lg:px-16">
       <div className="w-full max-w-screen-lg whitespace-pre-wrap">
         <span className="text-purple-500">carl@eid:<span className="text-blue-500">~</span><span className="text-white">$&nbsp;</span></span>
         <span ref={el} className={`${styles.typedText} ${styles.typedCursor}`} />
@@ -59,4 +59,4 @@ const AnimatedText: React.FC = () => {
   );
 };
 
-export default AnimatedText;
+export default AnimatedTextS1;

@@ -4,12 +4,20 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import BlogPostCard from './BlogPostCard';
 import BlinkingDots from './BlinkingDots';
-import { BlogPost } from '../app/api/blog-posts/route';
+import { BlogPost } from '@/lib/blog';
 
 interface BlogPostCardsProps {
   blogPosts: BlogPost[];
   loading: boolean;
 }
+
+const StillWritingNote: React.FC = () => (
+  <div className="text-center py-12">
+    <p className="text-dim text-lg">
+      Still writing blog posts<BlinkingDots />
+    </p>
+  </div>
+);
 
 const BlogPostCards: React.FC<BlogPostCardsProps> = ({ blogPosts, loading }) => {
   // Pagination logic
@@ -39,19 +47,13 @@ const BlogPostCards: React.FC<BlogPostCardsProps> = ({ blogPosts, loading }) => 
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-        <span className="ml-3 text-gray-300">Loading blog posts...</span>
+        <span className="ml-3 text-dim">Loading blog posts...</span>
       </div>
     );
   }
 
   if (blogPosts.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-300 text-lg">
-          Still writing blog posts<BlinkingDots />
-        </p>
-      </div>
-    );
+    return <StillWritingNote />;
   }
 
   return (
@@ -66,14 +68,7 @@ const BlogPostCards: React.FC<BlogPostCardsProps> = ({ blogPosts, loading }) => 
           />
         ))}
 
-        {/* Show "Still writing" message after posts on last page only */}
-        {isLastPage && (
-          <div className="text-center py-12">
-            <p className="text-gray-300 text-lg">
-              Still writing blog posts<BlinkingDots />
-            </p>
-          </div>
-        )}
+        {isLastPage && <StillWritingNote />}
       </div>
 
       {/* Section Navigator */}
@@ -83,10 +78,10 @@ const BlogPostCards: React.FC<BlogPostCardsProps> = ({ blogPosts, loading }) => 
             <button
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              className={`w-8 h-8 rounded-full font-medium text-sm transition-all duration-200 ${
+              className={`w-8 h-8 rounded-lg font-mono text-sm transition-all duration-200 ${
                 index + 1 === currentPage
-                  ? 'bg-purple-600 text-white border border-purple-600'
-                  : 'bg-transparent text-gray-300 border border-white/20 hover:border-white/40 hover:text-white'
+                  ? 'border border-purple-500/60 bg-purple-500/15 text-white'
+                  : 'bg-white/[0.03] text-dim border border-white/10 hover:border-white/30 hover:text-white'
               }`}
             >
               {index + 1}

@@ -3,10 +3,37 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-dark;
+:root {
+  --bg: #0a0a0a;
+  --text: #ededed;
+  --text-dim: #a1a1a1;
+  --accent: #a855f7;
+  color-scheme: dark;
 }
 
+body {
+  color: var(--text);
+  /* Near-black base with a faint cool glow bleeding in from the top and the
+     same subtle static dot matrix as homelab.carleid.dev (React Flow dots:
+     26px gap, 1px dots, #23232a). */
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(120, 120, 130, 0.08), transparent 70%),
+    radial-gradient(circle, #23232a 1px, transparent 1px);
+  background-size: auto, 26px 26px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headers use Roboto Mono; everything else inherits Roboto from body */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
 
 html {
   scroll-behavior: smooth;
@@ -39,15 +66,35 @@ textarea:-webkit-autofill:focus {
 .icon-swoop-in  { animation: icon-swoop-in  300ms ease forwards; }
 .icon-swoop-out { animation: icon-swoop-out 300ms ease forwards; }
 
-/* globals.css */
-
-.bg-background {
-  position: relative;
+/* ----------------------------------------------------- Hero background -- */
+/* The original pre-redesign hero: purple gradient with the animated
+   noise-texture overlay. Masked at the bottom so it fades smoothly into the
+   global dot-matrix background of the next section. */
+.crt-bg {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  background: linear-gradient(180deg, rgb(72, 1, 72), rgb(30,30,30));
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(48, 0, 48), rgb(10, 10, 10));
+  /* Eased multi-stop mask: fully transparent by 94% so no residual noise
+     speckle survives near the section boundary. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 50%,
+    rgba(0, 0, 0, 0.55) 70%,
+    rgba(0, 0, 0, 0.2) 85%,
+    transparent 94%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 50%,
+    rgba(0, 0, 0, 0.55) 70%,
+    rgba(0, 0, 0, 0.2) 85%,
+    transparent 94%
+  );
 }
 
-.bg-background::before {
+.crt-bg::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -56,21 +103,10 @@ textarea:-webkit-autofill:focus {
   bottom: -50%;
   width: 200%;
   height: 200vh;
-  background: transparent url('http://assets.iceable.com/img/noise-transparent.png') repeat 0 0;
+  background: transparent url('https://assets.iceable.com/img/noise-transparent.png') repeat 0 0;
   background-repeat: repeat;
   animation: bg-animation .2s infinite;
   opacity: .9;
-}
-
-.bg-background::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 30%; /* Adjust height for the blending area */
-  background: linear-gradient(transparent, rgb(30, 30, 30));
-  z-index: 1;
 }
 
 @keyframes bg-animation {
@@ -85,6 +121,12 @@ textarea:-webkit-autofill:focus {
   80% { transform: translate(-15%,0) }
   90% { transform: translate(10%,5%) }
   100% { transform: translate(5%,0) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-bg::before {
+    animation: none;
+  }
 }
 
 /* Custom Scrollbar */

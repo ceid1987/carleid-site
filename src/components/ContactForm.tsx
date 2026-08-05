@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ContactFormData } from '../app/api/contact/route';
+import { ContactFormData } from '@/app/api/contact/route';
 import { PhoneInput } from './ui/phone-input';
 import PrivacyModal from './PrivacyModal';
 
@@ -35,10 +35,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
   // default otherwise. Background/text stay dark regardless of fill state.
   const fieldClasses = (value: string, isValid: boolean) => {
     const base =
-      'w-full px-4 py-3 bg-black/30 backdrop-blur-sm border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200';
+      'w-full px-4 py-3 bg-white/[0.03] backdrop-blur-md border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200';
     if (isValid) return `${base} border-green-500 focus:ring-green-500 focus:border-transparent`;
     if (value.trim().length > 0) return `${base} border-red-500 focus:ring-red-500 focus:border-transparent`;
-    return `${base} border-white/20 focus:ring-purple-500/50 focus:border-purple-500/50`;
+    return `${base} border-white/10 focus:ring-purple-500/50 focus:border-purple-500/50`;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -110,7 +110,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="firstName" className="block font-mono text-sm font-medium text-dim mb-2">
               First Name *
             </label>
             <input
@@ -126,7 +126,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
           </div>
 
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="lastName" className="block font-mono text-sm font-medium text-dim mb-2">
               Last Name *
             </label>
             <input
@@ -143,7 +143,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="email" className="block font-mono text-sm font-medium text-dim mb-2">
             Email *
           </label>
           <input
@@ -159,7 +159,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="phone" className="block font-mono text-sm font-medium text-dim mb-2">
             Phone Number
           </label>
           <PhoneInput
@@ -171,7 +171,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="message" className="block font-mono text-sm font-medium text-dim mb-2">
             Message *
           </label>
           <textarea
@@ -196,8 +196,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         {submitStatus.type && (
           <div className={`p-4 rounded-lg ${
             submitStatus.type === 'success'
-              ? 'bg-green-900/50 border border-green-500 text-green-200'
-              : 'bg-red-900/50 border border-red-500 text-red-200'
+              ? 'bg-green-500/10 border border-green-500/50 text-green-300'
+              : 'bg-red-500/10 border border-red-500/50 text-red-300'
           }`}>
             {submitStatus.message}
           </div>
@@ -210,10 +210,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
             id="privacy-policy"
             checked={privacyAccepted}
             onChange={(e) => setPrivacyAccepted(e.target.checked)}
-            className="mt-1 w-3 h-3 appearance-none bg-white border border-white/50 rounded-sm checked:bg-purple-600 checked:border-purple-600 focus:ring-purple-500/50 focus:ring-1 cursor-pointer relative checked:after:content-['✓'] checked:after:text-white checked:after:text-xs checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center transition-all duration-200"
+            className="mt-1 w-3 h-3 appearance-none bg-white/[0.06] border border-white/30 rounded-sm checked:bg-purple-500 checked:border-purple-500 focus:ring-purple-500/50 focus:ring-1 cursor-pointer relative checked:after:content-['✓'] checked:after:text-white checked:after:text-xs checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center transition-all duration-200"
             required
           />
-          <label htmlFor="privacy-policy" className="text-sm text-gray-300">
+          <label htmlFor="privacy-policy" className="text-sm text-dim">
             I have read and acknowledged the{' '}
             <button
               type="button"
@@ -229,10 +229,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         <button
           type="submit"
           disabled={isSubmitting || !privacyAccepted}
-          className={`w-auto font-medium py-3 px-8 rounded-full transition-all duration-200 flex items-center justify-center border mx-auto ${
+          className={`w-auto font-medium py-3 px-8 rounded-lg transition-all duration-200 flex items-center justify-center border mx-auto ${
             isSubmitting || !privacyAccepted
-              ? 'bg-transparent border-white text-white cursor-not-allowed'
-              : 'bg-purple-600 border-purple-600 text-white hover:bg-purple-500 hover:border-purple-500'
+              ? 'bg-white/[0.03] border-white/15 text-dim cursor-not-allowed'
+              : 'bg-purple-500/15 border-purple-500/50 text-white hover:bg-purple-500/25 hover:border-purple-500'
           }`}
         >
           {isSubmitting ? (

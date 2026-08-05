@@ -10,8 +10,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { BlogPost } from '../../api/blog-posts/route';
-import 'highlight.js/styles/github-dark.css';
+import { BlogPost, externalHref } from '@/lib/blog';
+import { faExternalLink } from '@fortawesome/free-solid-svg-icons';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -34,7 +34,7 @@ const CodeBlock: React.FC<{ language: string; children: React.ReactNode }> = ({ 
   };
 
   return (
-    <pre className="relative bg-gray-900 rounded-lg p-4 overflow-x-auto mb-6 border border-gray-700">
+    <pre className="relative bg-[#0e0e12] rounded-lg p-4 overflow-x-auto mb-6 border border-white/10">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-gray-400 uppercase tracking-wider">{language}</span>
         <div className="flex items-center gap-3">
@@ -61,6 +61,18 @@ const CodeBlock: React.FC<{ language: string; children: React.ReactNode }> = ({ 
     </pre>
   );
 };
+
+const BackToHomeButton: React.FC<{ isDark: boolean; onClick: () => void }> = ({ isDark, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center space-x-3 text-purple-400 hover:text-purple-300 transition-colors duration-200 px-4 py-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-200'}`}
+  >
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    </svg>
+    <span className="text-base font-medium">Back to home page</span>
+  </button>
+);
 
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
   const resolvedParams = use(params);
@@ -172,20 +184,12 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
         <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Top bar: back button + theme toggle */}
         <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={() => router.push('/#projects')}
-            className={`flex items-center space-x-3 text-purple-400 hover:text-purple-300 transition-colors duration-200 px-4 py-2 rounded-lg ${isDark ? 'hover:bg-gray-800 hover:bg-opacity-50' : 'hover:bg-gray-200'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-base font-medium">Back to home page</span>
-          </button>
+          <BackToHomeButton isDark={isDark} onClick={() => router.push('/#projects')} />
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            className={`relative w-10 h-10 rounded-full overflow-hidden transition-colors duration-200 ${isDark ? 'text-yellow-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-200'}`}
+            className={`relative w-10 h-10 rounded-full overflow-hidden transition-colors duration-200 ${isDark ? 'text-yellow-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-200'}`}
           >
             {/* Incoming icon: swoops in from the right when switching */}
             <span
@@ -209,7 +213,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
         {/* Featured Badge */}
         {post.featured && (
           <div className="mb-4">
-            <span className="inline-block px-3 py-1 text-sm font-semibold bg-purple-500 text-white rounded-full">
+            <span className="inline-block px-2.5 py-1 font-mono text-xs uppercase tracking-wider rounded-md border border-purple-500/50 bg-purple-500/15 text-purple-300">
               Featured Post
             </span>
           </div>
@@ -274,7 +278,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
                     {children}
                   </CodeBlock>
                 ) : (
-                  <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-gray-800 text-green-400' : 'bg-gray-200 text-purple-700'}`} {...props}>
+                  <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-white/[0.06] text-green-400' : 'bg-gray-200 text-purple-700'}`} {...props}>
                     {children}
                   </code>
                 );
@@ -295,19 +299,19 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
                 </div>
               ),
               thead: ({ children }) => (
-                <thead className={isDark ? 'bg-gray-800' : 'bg-gray-100'}>{children}</thead>
+                <thead className={isDark ? 'bg-white/[0.06]' : 'bg-gray-100'}>{children}</thead>
               ),
               tbody: ({ children }) => <tbody>{children}</tbody>,
               tr: ({ children }) => (
-                <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>{children}</tr>
+                <tr className={`border-b ${isDark ? 'border-white/10' : 'border-gray-200'}`}>{children}</tr>
               ),
               th: ({ children }) => (
-                <th className={`px-4 py-2 text-left font-semibold border ${isDark ? 'border-gray-700 text-white' : 'border-gray-200 text-gray-900'}`}>
+                <th className={`px-4 py-2 text-left font-semibold border ${isDark ? 'border-white/10 text-white' : 'border-gray-200 text-gray-900'}`}>
                   {children}
                 </th>
               ),
               td: ({ children }) => (
-                <td className={`px-4 py-2 align-top border ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                <td className={`px-4 py-2 align-top border ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
                   {children}
                 </td>
               ),
@@ -325,18 +329,23 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ params }) => {
         </div>
 
         {/* Back Button at Bottom */}
-        <div className={`mt-12 pt-8 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-          <button
-            onClick={() => router.push('/#projects')}
-            className={`flex items-center space-x-3 text-purple-400 hover:text-purple-300 transition-colors duration-200 px-4 py-2 rounded-lg ${isDark ? 'hover:bg-gray-800 hover:bg-opacity-50' : 'hover:bg-gray-200'}`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-base font-medium">Back to home page</span>
-          </button>
+        <div className={`mt-12 pt-8 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+          <BackToHomeButton isDark={isDark} onClick={() => router.push('/#projects')} />
         </div>
       </div>
+
+      {/* Persistent project link (fixed to the bottom-right of the screen) */}
+      {post.link && post.linkSubtext && (
+        <a
+          href={externalHref(post.link)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-purple-500/50 bg-[#141418] font-mono text-sm text-purple-300 hover:border-purple-500 hover:bg-[#2a1f38] hover:text-white transition-all duration-200"
+        >
+          {post.linkSubtext}
+          <FontAwesomeIcon icon={faExternalLink} className="w-3.5 h-3.5" />
+        </a>
+      )}
     </div>
   );
 };

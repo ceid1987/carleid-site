@@ -14,6 +14,9 @@ interface CarouselItem {
   isSpotify?: boolean;
 }
 
+const NAV_BUTTON_CLASSES =
+  'hidden md:block absolute top-1/2 transform -translate-y-1/2 rounded-lg border border-white/10 bg-black/50 hover:border-white/30 hover:bg-black/60 backdrop-blur-sm p-1.5 transition-all duration-200 z-20';
+
 const Carousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(1); // Start at 1 because we'll add duplicate at beginning
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
@@ -21,7 +24,6 @@ const Carousel: React.FC = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [touchStartTime, setTouchStartTime] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [lastInteractionWasTouch, setLastInteractionWasTouch] = useState(false);
   const [isHoveringButton, setIsHoveringButton] = useState(false);
@@ -33,7 +35,6 @@ const Carousel: React.FC = () => {
       alt: 'Carousel image 1',
       title: 'bio',
       text: "I'm a software engineer based in France. I am passionate about DevOps and building cool software. I love video games, skateboarding and football.",
-      subtitle: "This is me watching my brother play GTA Vice City on an old CRT monitor."
     },
     {
       id: 2,
@@ -58,9 +59,7 @@ const Carousel: React.FC = () => {
     
     const newIndex = currentIndex + 1;
     setCurrentIndex(newIndex);
-    
-    // Overlay state is now persistent - no need to change it
-    
+
     setTimeout(() => {
       // If we've moved to the duplicate at the end, snap to the real first item
       if (newIndex === extendedItems.length - 1) {
@@ -76,9 +75,7 @@ const Carousel: React.FC = () => {
     
     const newIndex = currentIndex - 1;
     setCurrentIndex(newIndex);
-    
-    // Overlay state is now persistent - no need to change it
-    
+
     setTimeout(() => {
       // If we've moved to the duplicate at the beginning, snap to the real last item
       if (newIndex === 0) {
@@ -102,7 +99,6 @@ const Carousel: React.FC = () => {
     setTouchStart(touch);
     setTouchEnd(0);
     setTouchStartTime(Date.now());
-    setIsDragging(false);
     setDragOffset(0);
   };
 
@@ -110,15 +106,12 @@ const Carousel: React.FC = () => {
     if (!touchStart || isTransitioning) return;
     const touch = e.targetTouches[0].clientX;
     setTouchEnd(touch);
-    const offset = touch - touchStart;
-    setDragOffset(offset);
-    setIsDragging(Math.abs(offset) > 10); // Consider it dragging after 10px movement
+    setDragOffset(touch - touchStart);
   };
 
   const handleTouchEnd = () => {
     if (!touchStart || isTransitioning) return;
-    
-    setIsDragging(false);
+
     setDragOffset(0);
     
     const touchDuration = Date.now() - touchStartTime;
@@ -161,13 +154,13 @@ const Carousel: React.FC = () => {
   return (
     <div className="relative w-full max-w-2xl mx-auto px-4">
       <div 
-        className="relative h-96 overflow-hidden rounded-lg"
+        className="relative h-96 overflow-hidden rounded-2xl border border-white/10"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {extendedItems.map((item, index) => {
-          let position = index - currentIndex;
+          const position = index - currentIndex;
           const offset = dragOffset * 0.5;
           const realIndex = getRealIndex(index);
           const isCurrentItem = realIndex === getRealIndex(currentIndex);
@@ -194,8 +187,8 @@ const Carousel: React.FC = () => {
                 />
               
                 {/* Touch indicator */}
-                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 z-5 ${
-                  (showOverlay && isCurrentItem) ? 'opacity-0' : (isHoveringButton || false) ? 'opacity-0' : 'group-hover:opacity-0'
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                  (showOverlay && isCurrentItem) || isHoveringButton ? 'opacity-0' : 'group-hover:opacity-0'
                 }`}>
                   <div className="animate-pulse">
                     <svg className="w-12 h-12 md:w-16 md:h-16 text-white" fill="currentColor" viewBox="0 0 24 24" style={{animationDuration: '2s'}}>
@@ -251,7 +244,7 @@ const Carousel: React.FC = () => {
         }}
         onMouseEnter={() => setIsHoveringButton(true)}
         onMouseLeave={() => setIsHoveringButton(false)}
-        className="hidden md:block absolute top-1/2 left-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
+        className={`${NAV_BUTTON_CLASSES} left-6`}
         type="button"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +264,7 @@ const Carousel: React.FC = () => {
         }}
         onMouseEnter={() => setIsHoveringButton(true)}
         onMouseLeave={() => setIsHoveringButton(false)}
-        className="hidden md:block absolute top-1/2 right-6 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full p-1.5 transition-all duration-200 z-20"
+        className={`${NAV_BUTTON_CLASSES} right-6`}
         type="button"
       >
         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,10 +278,10 @@ const Carousel: React.FC = () => {
           <button
             key={index}
             onClick={() => setCurrentIndex(index + 1)} // +1 because of duplicate at start
-            className={`w-3 h-3 rounded-full transition-all duration-200 ${
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
               index === getRealIndex(currentIndex)
-                ? 'bg-purple-500' 
-                : 'bg-white bg-opacity-30 hover:bg-opacity-50'
+                ? 'bg-purple-500'
+                : 'bg-white/20 hover:bg-white/40'
             }`}
           />
         ))}

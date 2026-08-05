@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { STRAPI_URL, hasStrapiConfig, strapiHeaders } from '@/lib/strapi';
 
 export interface ContactFormData {
   firstName: string;
@@ -8,31 +9,31 @@ export interface ContactFormData {
   message: string;
 }
 
-// Simple in-memory rate limiter with persistence in development
+// In-memory rate limiter. Stored on globalThis in development so the map
+// survives hot reloads; in production the module instance lives as long as
+// the server process.
 const globalForRateLimit = globalThis as unknown as {
   rateLimitMap: Map<string, { count: number; resetTime: number }> | undefined;
 };
 
-const rateLimitMap = globalForRateLimit.rateLimitMap ?? new Map<string, { count: number; resetTime: number }>();
+const rateLimitMap =
+  globalForRateLimit.rateLimitMap ?? new Map<string, { count: number; resetTime: number }>();
 
 if (process.env.NODE_ENV === 'development') {
   globalForRateLimit.rateLimitMap = rateLimitMap;
 }
 
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
-const RATE_LIMIT_MAX_REQUESTS = 1; // Max 1 submission per 24 hours per IP
+const RATE_LIMIT_MAX_REQUESTS = 1; // max submissions per window per IP
 
-function getRateLimitKey(ip: string): string {
-  return `contact_${ip}`;
-}
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function isRateLimited(ip: string): boolean {
-  const key = getRateLimitKey(ip);
+  const key = `contact_${ip}`;
   const now = Date.now();
   const record = rateLimitMap.get(key);
 
   if (!record || now > record.resetTime) {
-    // Reset or create new record
     rateLimitMap.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
     return false;
   }
@@ -41,49 +42,30 @@ function isRateLimited(ip: string): boolean {
     return true;
   }
 
-  // Increment count
   record.count++;
-  rateLimitMap.set(key, record);
   return false;
 }
 
 function getClientIP(request: Request): string {
-  // Try to get real IP from headers (for production with proxy/CDN)
+  // Real client IP comes from proxy/CDN headers in production.
   const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-
   if (forwarded) {
     return forwarded.split(',')[0].trim();
   }
 
+  const realIP = request.headers.get('x-real-ip');
   if (realIP) {
     return realIP;
   }
 
-  // For development, normalize IPv6 localhost to a consistent value
-  // Next.js in dev mode often provides ::1 (IPv6 localhost)
+  // Local dev has no proxy headers; use a stable placeholder so the rate
+  // limiter still keys consistently (Next dev reports ::1 and variants).
   return 'dev-localhost';
-}
-
-let STRAPI_URL: string;
-let STRAPI_API_TOKEN: string;
-
-if (process.env.NODE_ENV === 'development') {
-  // Local environment
-  STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
-  STRAPI_API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
-} else {
-  // Production environment
-  STRAPI_URL = process.env.STRAPI_URL || '';
-  STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || '';
 }
 
 export async function POST(request: Request) {
   try {
-    // Check rate limiting
     const clientIP = getClientIP(request);
-    console.log(`Contact form request from IP: ${clientIP}`);
-    console.log(`Rate limit map:`, rateLimitMap);
 
     if (isRateLimited(clientIP)) {
       console.log(`Rate limit exceeded for IP: ${clientIP}`);
@@ -93,8 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if required environment variables are present
-    if (!STRAPI_URL || !STRAPI_API_TOKEN) {
+    if (!hasStrapiConfig()) {
       console.error('Missing required environment variables for Strapi API');
       return NextResponse.json(
         { error: 'Server configuration error' },
@@ -103,8 +84,6 @@ export async function POST(request: Request) {
     }
 
     const body: ContactFormData = await request.json();
-
-    // Basic validation
     const { firstName, lastName, email, phone, message } = body;
 
     if (!firstName || !lastName || !email || !message) {
@@ -114,29 +93,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // Email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+    if (!EMAIL_PATTERN.test(email)) {
       return NextResponse.json(
         { error: 'Invalid email address' },
         { status: 400 }
       );
     }
 
-    // Send to Strapi contact API
     const response = await fetch(`${STRAPI_URL}/api/contact`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        phone,
-        message
-      }),
+      headers: strapiHeaders,
+      body: JSON.stringify({ firstName, lastName, email, phone, message }),
     });
 
     if (!response.ok) {
@@ -148,14 +115,11 @@ export async function POST(request: Request) {
     }
 
     const result = await response.json();
-    console.log('Contact form submitted successfully at:', new Date().toISOString());
-
     return NextResponse.json({
       success: true,
-      message: 'Message sent successfully! I\'ll get back to you soon.',
-      data: result.data
+      message: "Message sent successfully! I'll get back to you soon.",
+      data: result.data,
     });
-
   } catch (error) {
     console.error('Error submitting contact form:', error);
     return NextResponse.json(

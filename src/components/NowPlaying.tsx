@@ -168,17 +168,17 @@ const NowPlaying = () => {
 
   if (!song) {
     return (
-      <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-lg bg-gray-800 backdrop-blur-sm bg-opacity-10">
+      <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-2xl border border-white/10 bg-[#141418]/60 backdrop-blur-md">
         <div className="flex items-center space-x-3 md:space-x-4">
           <FaSpotify size={20} className="text-green-500 md:w-6 md:h-6" />
           <h2 className="text-base md:text-lg font-bold">now playing</h2>
         </div>
         <div className="flex items-center space-x-3 md:space-x-4">
-          <div className="w-20 h-20 md:w-32 md:h-32 rounded-lg bg-gray-900 flex-shrink-0" />
+          <div className="w-20 h-20 md:w-32 md:h-32 rounded-lg bg-white/[0.05] border border-white/[0.08] flex-shrink-0" />
           <div className="min-w-0 flex-1">
             <ScrollingText text="nothing" className="text-sm md:text-base font-bold" />
-            <ScrollingText text="no one" className="text-sm md:text-base text-gray-500" />
-            <p className="text-xs text-gray-500 truncate">probably sleeping</p>
+            <ScrollingText text="no one" className="text-sm md:text-base text-dim" />
+            <p className="text-xs text-dim truncate">probably sleeping</p>
           </div>
         </div>
       </div>
@@ -188,7 +188,7 @@ const NowPlaying = () => {
   const progressPercentage = (currentProgress / song.duration) * 100;
 
   return (
-    <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-lg bg-gray-800 backdrop-blur-lg bg-opacity-60">
+    <div className="flex-col w-full max-w-xs md:min-w-96 p-3 md:p-4 space-y-3 md:space-y-4 rounded-2xl border border-white/10 bg-[#141418]/80 backdrop-blur-lg">
       <div className="flex items-center space-x-3 md:space-x-4">
         <FaSpotify size={20} className="text-green-500 md:w-6 md:h-6" />
         <h2 className="text-base md:text-lg font-bold">Now Playing</h2>
@@ -197,14 +197,14 @@ const NowPlaying = () => {
         <img src={song.albumImage} alt={song.name} className="w-20 h-20 md:w-32 md:h-32 rounded-lg flex-shrink-0" />
         <div className='w-full min-w-0 flex-1'>
           <ScrollingText text={song.name} className="text-sm font-bold" />
-          <ScrollingText text={song.artists} className="text-sm text-gray-500" />
-          <div className="h-1 bg-gray-600 rounded-full mt-2">
+          <ScrollingText text={song.artists} className="text-sm text-dim" />
+          <div className="h-1 bg-white/10 rounded-full mt-2">
             <div
               className="h-full bg-green-500 rounded-full transition-all"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-dim mt-1">
             <span>{formatTime(currentProgress)}</span>
             <span>{formatTime(song.duration)}</span>
           </div>
